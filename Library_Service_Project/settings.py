@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework_simplejwt',
     'rest_framework',
     'rest_framework.authtoken',
     'books',
@@ -132,17 +133,16 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-#REST_FRAMEWORK = {
-#    "DEFAULT_AUTHENTICATION_CLASSES": [
-#        "rest_framework_simplejwt.authentication.JWTAuthentication",
-#    ],
-#    "DEFAULT_PERMISSION_CLASSES": [
-#        "rest_framework.permissions.IsAuthenticated",
-#    ],
-#}
+REST_FRAMEWORK = {
+   "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ]
+}
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "Library API",
     "DESCRIPTION": "API for managing books in the library",
     "VERSION": "1.0.0",
 }
+
+AUTH_USER_MODEL = "books.User"
