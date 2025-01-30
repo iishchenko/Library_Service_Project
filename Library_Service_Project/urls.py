@@ -15,30 +15,15 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from rest_framework.routers import DefaultRouter
 from django.urls import path, include
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework.reverse import reverse
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-)
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
-
-@api_view(["GET"])
-def api_root(request, format=None):
-    return Response({
-        "books": reverse("book-list", request=request, format=format),
-    })
-
+router = DefaultRouter()
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("api/", api_root),  # Custom API root view
-    path("api/", include("books.urls")),  # Include your app routes
-]
-
-urlpatterns += [
-    path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
-    path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path('api/', include('books.urls')),
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]

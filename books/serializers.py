@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from books.models import Book
+from books.models import Book, Borrowing
 
 
 class BookSerializer(serializers.ModelSerializer):
@@ -32,3 +32,10 @@ class RegisterUserSerializer(serializers.ModelSerializer):
             password=validated_data["password"],
         )
         return user
+
+
+class BorrowingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Borrowing
+        fields = ["id", "book", "user", "due_date", "date_borrowed"]
+        read_only_fields = ["id", "date_borrowed"]

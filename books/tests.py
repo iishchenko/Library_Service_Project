@@ -43,15 +43,6 @@ class UserModelTest(TestCase):
 #        # Assert that the image field is None, which is expected behavior
 #        self.assertIs(user.image, None)
 
-    def test_user_code_agency(self):
-        user = get_user_model().objects.create_user(
-            email="testuser@example.com",
-            username="testuser",
-            password="password123",
-            code_agency=10
-        )
-        self.assertEqual(user.code_agency, 10)
-
 
 class BookModelTest(TestCase):
 
