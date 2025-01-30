@@ -1,24 +1,21 @@
-from rest_framework.viewsets import ModelViewSet
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 from books.models import Book
 from books.serializers import BookSerializer
 from rest_framework import generics
 from django.contrib.auth import get_user_model
-from .serializers import UserSerializer, RegisterUserSerializer
+from books.serializers import UserSerializer, RegisterUserSerializer
 from rest_framework.permissions import AllowAny
-
-
-class BookViewSet(ModelViewSet):
-    queryset = Book.objects.all()
-    serializer_class = BookSerializer
-
-    def get_permissions(self):
-        if self.action in ["create", "update", "partial_update", "destroy"]:
-            return [IsAdminUser()]
-        return [IsAuthenticatedOrReadOnly()]
-
+from rest_framework import viewsets
 
 User = get_user_model()
+
+
+class BookViewSet(viewsets.ModelViewSet):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
 
 class RegisterUserView(generics.CreateAPIView):

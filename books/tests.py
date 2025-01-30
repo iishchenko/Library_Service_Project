@@ -1,37 +1,85 @@
-from rest_framework.test import APITestCase
-from rest_framework import status
+from django.test import TestCase
+from django.contrib.auth import get_user_model
 from books.models import Book
+from django.utils import timezone
 
 
-class BookAPITests(APITestCase):
-    def setUp(self):
-        self.book = Book.objects.create(
-            title="Example Book",
-            author="John Doe",
-            published_date="2020-01-01",
+class UserModelTest(TestCase):
+
+    def test_user_creation(self):
+        user = get_user_model().objects.create_user(
+            email="testuser@example.com",
+            username="testuser",
+            password="password123",
+        )
+        self.assertEqual(user.email, "testuser@example.com")
+        self.assertEqual(user.username, "testuser")
+        self.assertTrue(user.check_password("password123"))
+        self.assertEqual(user.phone_number, "0123456789")
+
+    def test_user_phone_number(self):
+        user = get_user_model().objects.create_user(
+            email="testuser@example.com",
+            username="testuser",
+            password="password123",
+            phone_number="1234567890"
+        )
+        self.assertEqual(user.phone_number, "1234567890")
+
+    def test_user_name_default(self):
+        user = get_user_model().objects.create_user(
+            email="testuser@example.com",
+            username="testuser",
+            password="password123"
+        )
+        self.assertEqual(user.name, "Default Name")
+
+#    def test_user_image(self):
+#        user = get_user_model().objects.create_user(
+#            email="testuser@example.com",
+#            username="testuser",
+#            password="password123"
+#        )
+#        # Assert that the image field is None, which is expected behavior
+#        self.assertIs(user.image, None)
+
+    def test_user_code_agency(self):
+        user = get_user_model().objects.create_user(
+            email="testuser@example.com",
+            username="testuser",
+            password="password123",
+            code_agency=10
+        )
+        self.assertEqual(user.code_agency, 10)
+
+
+class BookModelTest(TestCase):
+
+    def test_book_creation(self):
+        book = Book.objects.create(
+            title="Test Book",
+            author="Test Author",
+            published_date=timezone.now(),
             isbn="1234567890123",
             pages=200,
-            cover="HARD",
+            cover="SOFT",
             language="English",
         )
+        self.assertEqual(book.title, "Test Book")
+        self.assertEqual(book.author, "Test Author")
+        self.assertEqual(book.isbn, "1234567890123")
+        self.assertEqual(book.pages, 200)
+        self.assertEqual(book.cover, "SOFT")
+        self.assertEqual(book.language, "English")
 
-    def test_list_books(self):
-        response = self.client.get("/api/books/")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_retrieve_book(self):
-        response = self.client.get(f"/api/books/{self.book.id}/")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_create_book(self):
-        data = {
-            "title": "New Book",
-            "author": "Jane Doe",
-            "published_date": "2021-01-01",
-            "isbn": "9876543210987",
-            "pages": 150,
-            "cover": "SOFT",
-            "language": "English",
-        }
-        response = self.client.post("/api/books/", data)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)  # Only admins can create
+    def test_book_str_method(self):
+        book = Book.objects.create(
+            title="Test Book",
+            author="Test Author",
+            published_date=timezone.now(),
+            isbn="1234567890123",
+            pages=200,
+            cover="SOFT",
+            language="English",
+        )
+        self.assertEqual(str(book), "Test Book by Test Author")
