@@ -8,7 +8,8 @@ from django.utils import timezone
 class User(AbstractUser):
     email = models.EmailField(unique=True, default="admin@example.com")
     phone_number = models.CharField(max_length=20, unique=True, default="0123456789")
-    name = models.CharField(max_length=150, default="Default Name")
+    first_name = models.CharField(max_length=150, default="Default first name")
+    last_name = models.CharField(max_length=150, default="Default last name")
     image = models.ImageField(blank=True, null=True, default=None, upload_to='images/')
 
     USERNAME_FIELD = "email"
@@ -25,6 +26,7 @@ class Book(models.Model):
     author = models.CharField(max_length=255)
     published_date = models.DateField()
     isbn = models.CharField(max_length=13, unique=True)
+    іnventory = models.CharField(max_length=13, unique=True, default="123456789")
     pages = models.IntegerField()
     cover = models.CharField(
         max_length=20,
@@ -34,7 +36,7 @@ class Book(models.Model):
         ],
     )
     language = models.CharField(max_length=50)
-    available_copies = models.PositiveIntegerField(default=1)
+    daily_fee = models.DecimalField(max_digits=6, decimal_places=2, help_text="Daily rental fee in USD")
 
     def __str__(self):
         return f"{self.title} by {self.author}"
@@ -53,3 +55,21 @@ class Borrowing(models.Model):
 
     class Meta:
         unique_together = ('user', 'book', 'date_borrowed')
+
+
+class Payment(models.Model):
+    borrowing = models.OneToOneField(Borrowing, on_delete=models.CASCADE, related_name="payment")
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=100, decimal_places=2)
+    paid_at = models.DateTimeField(default=timezone.now)
+    payment_status = models.CharField(
+        max_length=20,
+        choices=[('pending', 'Pending'), ('completed', 'Completed'), ('failed', 'Failed')],
+        default='pending'
+    )
+
+    def mark_as_paid(self):
+        """Marks the payment as completed"""
+        self.payment_status = "completed"
+        self.paid_at = timezone.now()
+        self.save()

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from books.models import Book, Borrowing
+from books.models import Book, Borrowing, Payment
 
 
 class BookSerializer(serializers.ModelSerializer):
@@ -39,3 +39,10 @@ class BorrowingSerializer(serializers.ModelSerializer):
         model = Borrowing
         fields = ["id", "book", "user", "due_date", "date_borrowed"]
         read_only_fields = ["id", "date_borrowed"]
+
+
+class PaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Payment
+        fields = ['id', 'borrowing', 'user', 'amount', 'paid_at', 'payment_status']
+        read_only_fields = ['id', 'paid_at', 'payment_status']
